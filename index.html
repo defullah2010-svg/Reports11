@@ -11,6 +11,53 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 
 <style>
+/* ----------- تنسيق نافذة التنويه ----------- */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'HelveticaNeueW23', Arial, sans-serif;
+}
+/* خلفية التعتيم */
+.overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+/* صندوق الرسالة */
+.popup {
+  background: #fff;
+  padding: 20px;
+  max-width: 350px;
+  text-align: center;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  animation: fadeIn 0.4s ease;
+}
+.popup h2 { margin-top: 0; color: #333; font-size: 20px; }
+.popup p { color: #555; font-size: 16px; margin: 15px 0; }
+.popup img { max-width: 150px; margin: 10px 0; }
+.popup button {
+  padding: 10px 20px;
+  background: #008CBA;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: 0.3s;
+}
+.popup button:hover { background: #005f7a; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ----------- تنسيقات صفحة التقارير الأصلية ----------- */
 @font-face {
   font-family: 'HelveticaNeueW23';
   src: url('fonts/HelveticaNeueW23-Regular.ttf') format('truetype');
@@ -20,8 +67,6 @@
 
 body, input, textarea, label, button, header, footer, .tab-content {
   font-family: 'HelveticaNeueW23', Arial, sans-serif;
-  margin:0;
-  padding:0;
   background:#f5f5f5;
 }
 
@@ -40,13 +85,7 @@ label {
   margin:5px 0 2px;
   font-weight:bold;
   font-size:12px;
-  background:transparent;
   text-align:center;
-}
-
-label::before {
-  content: ""; /* أيقونة افتراضية */
-  margin-left: 5px;
 }
 
 input, textarea {
@@ -95,56 +134,69 @@ footer {
 </head>
 <body>
 
-<header>
-<h1>نظام تقارير أداء المعلم</h1>
-</header>
-
-<div class="tabs">
-<button class="tab-button active" onclick="openTab('daily')">نموذج التقرير اليومي</button>
-<button class="tab-button" onclick="openTab('weekly')">نموذج التقرير الأسبوعي</button>
-<button class="tab-button" onclick="openTab('monthly')">نموذج التقرير الشهري</button>
+<!-- نافذة التنويه -->
+<div class="overlay" id="popupOverlay">
+  <div class="popup">
+    <h2>💡 تنويه</h2>
+    <p>رسوم استخدام الرابط بعد تاريخ 15 أكتوبر 2025 <strong>10 ريال</strong>.<br>
+    تدفع الرسوم لمرة واحدة فقط و يمكنك الدخول مجانًا لتجربة البرنامج، لكن بدفعك تجعل استخدامك حلالًا وتدعم استمرار الخدمة وأذنت لمن يشهد والله خير الشاهدين.</p>
+    <img src="images/cash.png" alt="cash">
+    <button onclick="closePopup()">إغلاق</button>
+  </div>
 </div>
 
-<!-- التقرير اليومي -->
+<!-- محتوى صفحة النظام -->
+<div id="mainContent" style="display:none;">
+  <header>
+    <h1>نظام تقارير أداء المعلم</h1>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-button active" onclick="openTab('daily')">نموذج التقرير اليومي</button>
+    <button class="tab-button" onclick="openTab('weekly')">نموذج التقرير الأسبوعي</button>
+    <button class="tab-button" onclick="openTab('monthly')">نموذج التقرير الشهري</button>
+  </div>
+
+  <!-- التقرير اليومي -->
 <div id="daily" class="tab-content active">
-<label><h2> التقرير اليومي</h2></label>
+<label><h2>التقرير اليومي</h2></label>
 
 <div style="display:flex; gap:10px; justify-content:center; margin-bottom:30px;">
   <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label> إدارة تعليم منطقة</label>
+    <label>إدارة تعليم منطقة</label>
     <input type="text">
   </div>
   <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label> اسم المدرسة</label>
+    <label>اسم المدرسة</label>
     <input type="text">
   </div>
 </div>
 
 <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:5px;">
-  <div><label> اسم المعلم</label><input type="text"></div>
-  <div><label> التخصص</label><input type="text"></div>
-  <div><label> الفصل الدراسي</label><input type="text"></div>
-  <div><label> الصف</label><input type="text"></div>
-  <div><label> الوحدة الدراسية</label><input type="text"></div>
-  <div><label> عنوان الدرس</label><input type="text"></div>
-  <div><label> التاريخ</label><input type="text" id="dailyDate" placeholder="DD-MM-YYYY"></div>
-  <div><label> الحصة</label><input type="text"></div>
+  <div><label>اسم المعلم</label><input type="text"></div>
+  <div><label>التخصص</label><input type="text"></div>
+  <div><label>الفصل الدراسي</label><input type="text"></div>
+  <div><label>الصف</label><input type="text"></div>
+  <div><label>الوحدة الدراسية</label><input type="text"></div>
+  <div><label>عنوان الدرس</label><input type="text"></div>
+  <div><label>التاريخ</label><input type="text" id="dailyDate" placeholder="DD-MM-YYYY"></div>
+  <div><label>الحصة</label><input type="text"></div>
 </div>
 
-<label> أهداف الدرس</label>
+<label>أهداف الدرس</label>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
   <input type="text"><input type="text"><input type="text">
   <input type="text"><input type="text"><input type="text">
 </div>
 
-<label> نسبة تحقق أهداف الدرس</label><input type="text">
+<label>نسبة تحقق أهداف الدرس</label><input type="text">
 
-<label> ملاحظات حول تفاعل الطلاب</label>
+<label>ملاحظات حول تفاعل الطلاب</label>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
   <input type="text"><input type="text"><input type="text">
 </div>
 
-<label> التحديات الصفية</label>
+<label>التحديات الصفية</label>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
   <input type="text"><input type="text"><input type="text">
 </div>
@@ -152,76 +204,77 @@ footer {
 <!-- حقل مدير المدرسة -->
 <div style="display:flex; justify-content:center; margin-bottom:10px;">
   <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label> مدير المدرسة</label>
+    <label>مدير المدرسة</label>
     <input type="text">
   </div>
 </div>
+
 
 <input type="file" multiple accept="image/*" onchange="storeImages(event,'daily')">
 <div id="daily-counter" style="font-size:12px; color:#15445a; font-weight:bold;">عدد الصور المرفوعة: 0 / 4</div>
 <div id="daily-preview" style="display:flex; gap:5px; flex-wrap:wrap; margin-top:5px;"></div>
 
-<button onclick="printPDF('daily')"> طباعة التقرير اليومي</button>
+<button onclick="printPDF('daily')">طباعة التقرير اليومي</button>
 </div>
 
 <!-- التقرير الأسبوعي -->
 <div id="weekly" class="tab-content">
-<label><h2> التقرير الأسبوعي</h2></label>
+<label><h2>التقرير الأسبوعي</h2></label>
 
 <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px;">
   <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label> إدارة تعليم منطقة</label>
+    <label>إدارة تعليم منطقة</label>
     <input type="text">
   </div>
   <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label> اسم المدرسة</label>
+    <label>اسم المدرسة</label>
     <input type="text">
   </div>
 </div>
 
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <div><label> اسم المعلم</label><input type="text"></div>
-  <div><label> التخصص</label><input type="text"></div>
-  <div><label> الفصل الدراسي</label><input type="text"></div>
+  <div><label>اسم المعلم</label><input type="text"></div>
+  <div><label>التخصص</label><input type="text"></div>
+  <div><label>الفصل الدراسي</label><input type="text"></div>
 </div>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <div><label> الصف</label><input type="text"></div>
-  <div><label> الأسبوع</label><input type="text"></div>
-  <div><label> التاريخ</label><input type="text" id="weeklyDate" placeholder="DD-MM-YYYY"></div>
-</div>
-
-<label> أهم الدروس المنفذة</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-  <input type="text"><input type="text"><input type="text">
+  <div><label>الصف</label><input type="text"></div>
+  <div><label>الأسبوع</label><input type="text"></div>
+  <div><label>التاريخ</label><input type="text" id="weeklyDate" placeholder="DD-MM-YYYY"></div>
 </div>
 
-<label> أبرز نقاط القوة لدى الطلاب</label>
+<label>أهم الدروس المنفذة</label>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
+  <input type="text"><input type="text"><input type="text">
   <input type="text"><input type="text"><input type="text">
 </div>
 
-<label> أبرز نقاط الضعف لدى الطلاب</label>
+<label>أبرز نقاط القوة لدى الطلاب</label>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
   <input type="text"><input type="text"><input type="text">
 </div>
 
-<label> أبرز التحديات التعليمية</label>
+<label>أبرز نقاط الضعف لدى الطلاب</label>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
   <input type="text"><input type="text"><input type="text">
 </div>
 
-<label> الإجراءات العلاجية</label>
+<label>أبرز التحديات التعليمية</label>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
   <input type="text"><input type="text"><input type="text">
 </div>
 
-<label> أثر الإجراءات على تقدم الطلاب</label>
+<label>الإجراءات العلاجية</label>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
   <input type="text"><input type="text"><input type="text">
 </div>
 
-<label> توصيات الأسبوع القادم</label>
+<label>أثر الإجراءات على تقدم الطلاب</label>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
+  <input type="text"><input type="text"><input type="text">
+</div>
+
+<label>توصيات الأسبوع القادم</label>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
   <input type="text"><input type="text"><input type="text">
 </div>
@@ -229,7 +282,7 @@ footer {
 <!-- حقل مدير المدرسة -->
 <div style="display:flex; justify-content:center; margin-bottom:10px;">
   <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label> مدير المدرسة</label>
+    <label>مدير المدرسة</label>
     <input type="text">
   </div>
 </div>
@@ -238,68 +291,68 @@ footer {
 <div id="weekly-counter" style="font-size:12px; color:#15445a; font-weight:bold;">عدد الصور المرفوعة: 0 / 4</div>
 <div id="weekly-preview" style="display:flex; gap:5px; flex-wrap:wrap; margin-top:5px;"></div>
 
-<button onclick="printPDF('weekly')"> طباعة التقرير الأسبوعي</button>
+<button onclick="printPDF('weekly')">طباعة التقرير الأسبوعي</button>
 </div>
 
 <!-- التقرير الشهري -->
 <div id="monthly" class="tab-content">
-<label><h2> التقرير الشهري</h2></label>
+<label><h2>التقرير الشهري</h2></label>
 
 <div style="display:flex; gap:10px; justify-content:center; margin-bottom:1px;">
   <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label> إدارة تعليم منطقة</label>
+    <label>إدارة تعليم منطقة</label>
     <input type="text">
   </div>
   <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label> اسم المدرسة</label>
+    <label>اسم المدرسة</label>
     <input type="text">
   </div>
 </div>
 <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:5px;">
-  <div><label> اسم المعلم</label><input type="text"></div>
-  <div><label> التخصص</label><input type="text"></div>
-  <div><label> الفصل الدراسي</label><input type="text"></div>
-  <div><label> الصف</label><input type="text"></div>
+  <div><label>اسم المعلم</label><input type="text"></div>
+  <div><label>التخصص</label><input type="text"></div>
+  <div><label>الفصل الدراسي</label><input type="text"></div>
+  <div><label>الصف</label><input type="text"></div>
 </div>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <div><label> الشهر</label><input type="text"></div>
-  <div><label> التاريخ</label><input type="text" id="monthlyDate" placeholder="DD-MM-YYYY"></div>
-  <div><label> نسبة إنجاز الخطة</label><input type="text"></div>
+  <div><label>الشهر</label><input type="text"></div>
+  <div><label>التاريخ</label><input type="text" id="monthlyDate" placeholder="DD-MM-YYYY"></div>
+  <div><label>نسبة إنجاز الخطة</label><input type="text"></div>
 </div>
 
-<label> أبرز التحسينات في أداء الطلاب</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<label> القضايا المستمرة التي تحتاج متابعة</label>
+<label>أبرز التحسينات في أداء الطلاب</label>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
   <input type="text"><input type="text"><input type="text">
 </div>
 
-<label> خطط المعالجة المقترحة</label>
+<label>القضايا المستمرة التي تحتاج متابعة</label>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
   <input type="text"><input type="text"><input type="text">
 </div>
 
-<label> الطلاب المتميزون</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<label> الخطة الإثرائية للطلاب المتميزين</label>
+<label>خطط المعالجة المقترحة</label>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
   <input type="text"><input type="text"><input type="text">
 </div>
 
-<label> الطلاب المخفقون</label>
+<label>الطلاب المتميزون</label>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
   <input type="text"><input type="text"><input type="text">
   <input type="text"><input type="text"><input type="text">
 </div>
 
-<label> الخطة العلاجية للطلاب المخفقين</label>
+<label>الخطة الإثرائية للطلاب المتميزين</label>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
+  <input type="text"><input type="text"><input type="text">
+</div>
+
+<label>الطلاب المخفقون</label>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
+  <input type="text"><input type="text"><input type="text">
+  <input type="text"><input type="text"><input type="text">
+</div>
+
+<label>الخطة العلاجية للطلاب المخفقين</label>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
   <input type="text"><input type="text"><input type="text">
 </div>
@@ -307,7 +360,7 @@ footer {
 <!-- حقل مدير المدرسة -->
 <div style="display:flex; justify-content:center; margin-bottom:10px;">
   <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label> مدير المدرسة</label>
+    <label>مدير المدرسة</label>
     <input type="text">
   </div>
 </div>
@@ -316,12 +369,20 @@ footer {
 <div id="monthly-counter" style="font-size:12px; color:#15445a; font-weight:bold;">عدد الصور المرفوعة: 0 / 4</div>
 <div id="monthly-preview" style="display:flex; gap:5px; flex-wrap:wrap; margin-top:5px;"></div>
 
-<button onclick="printPDF('monthly')"> طباعة التقرير الشهري</button>
+<button onclick="printPDF('monthly')">طباعة التقرير الشهري</button>
 </div>
 
-<footer>تصميم : أ.ضيف الله الطويرقي   0543559220 </footer>
+
+  
+  <footer>تصميم : أ.ضيف الله الطويرقي   0543559220 </footer>
+</div>
 
 <script>
+function closePopup() {
+  document.getElementById("popupOverlay").style.display = "none";
+  document.getElementById("mainContent").style.display = "block";
+}
+
 let uploadedImages = {};
 
 function openTab(tabId){
@@ -333,15 +394,12 @@ function openTab(tabId){
 
 function storeImages(event, tabId){
   const files = event.target.files;
-
   if(!uploadedImages[tabId]) uploadedImages[tabId] = [];
-
   if(uploadedImages[tabId].length + files.length > 4){
     alert("مسموح برفع 4 صور فقط لكل تقرير.");
     event.target.value = "";
     return;
   }
-
   for(let i=0;i<files.length;i++){
     const reader = new FileReader();
     reader.onload = function(e){ 
@@ -365,11 +423,9 @@ function updateCounter(tabId){
 function renderPreview(tabId){
   const preview = document.getElementById(tabId+"-preview");
   preview.innerHTML = "";
-
   uploadedImages[tabId].forEach((src, index)=>{
     const container = document.createElement("div");
     container.style.position = "relative";
-
     const img = document.createElement("img");
     img.src = src;
     img.style.width = "70px";
@@ -377,7 +433,6 @@ function renderPreview(tabId){
     img.style.objectFit = "cover";
     img.style.border = "1px solid #ccc";
     img.style.borderRadius = "4px";
-
     const btn = document.createElement("button");
     btn.textContent = "❌";
     btn.style.position = "absolute";
@@ -394,7 +449,6 @@ function renderPreview(tabId){
       updateCounter(tabId);
       renderPreview(tabId);
     };
-
     container.appendChild(img);
     container.appendChild(btn);
     preview.appendChild(container);
