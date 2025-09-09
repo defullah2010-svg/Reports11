@@ -1,508 +1,112 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام تقارير أداء المعلم</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>رسالة إلى المعلمين والمعلمات</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+    body{
+      font-family: "Tajawal", "Noto Kufi Arabic", sans-serif;
+      background: radial-gradient(circle at 10% 20%, #f8f0ff 0%, rgba(248,240,255,0) 40%),
+                  linear-gradient(135deg,#e6f7ff 0%, #e8fff6 50%, #fff8e6 100%);
+      display:flex;align-items:center;justify-content:center;padding:24px;
+      -webkit-font-smoothing:antialiased;
+      text-align:center;
+    }
 
-<style>
-/* ----------- تنسيق نافذة التنويه ----------- */
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'HelveticaNeueW23', Arial, sans-serif;
-}
-/* خلفية التعتيم */
-.overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-/* صندوق الرسالة */
-.popup {
-  background: #fff;
-  padding: 20px;
-  max-width: 350px;
-  text-align: center;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  animation: fadeIn 0.4s ease;
-}
-.popup h2 { margin-top: 0; color: #333; font-size: 20px; }
-.popup p { color: #555; font-size: 16px; margin: 15px 0; }
-.popup img { max-width: 150px; margin: 10px 0; }
-.popup button {
-  padding: 10px 20px;
-  background: #008CBA;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 15px;
-  transition: 0.3s;
-}
-.popup button:hover { background: #005f7a; }
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
+    .card{
+      width:100%;max-width:820px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.96));
+      border-radius:18px;padding:28px;
+      border:1px solid rgba(0,0,0,0.06);
+      box-shadow:0 10px 30px rgba(18,38,63,0.08);
+      backdrop-filter: blur(6px);
+    }
 
-/* ----------- تنسيقات صفحة التقارير الأصلية ----------- */
-@font-face {
-  font-family: 'HelveticaNeueW23';
-  src: url('fonts/HelveticaNeueW23-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
+    header{
+      display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:14px;
+    }
 
-body, input, textarea, label, button, header, footer, .tab-content {
-  font-family: 'HelveticaNeueW23', Arial, sans-serif;
-  background:#f5f5f5;
-}
+    .logo{
+      width:68px;height:68px;border-radius:12px;
+      background:linear-gradient(135deg,#5eead4,#60a5fa);
+      display:flex;align-items:center;justify-content:center;
+      color:white;font-weight:700;font-size:20px;
+    }
 
-header { background:#15445A; color:white; text-align:center; padding:10px; }
-header h1, header h2 { margin:3px 0; font-size:16px; }
+    h1{font-size:22px;color:#0f172a;font-weight:800}
+    p.lead{margin-top:10px;color:#334155;line-height:1.7;font-weight:700}
 
-.tabs { display:flex; justify-content:center; background:#37648c; flex-wrap:wrap; }
-.tab-button { flex:1; padding:10px; cursor:pointer; text-align:center; background:#37648c; color:white; border:none; font-size:14px; font-weight:bold; }
-.tab-button.active { background:#0c8380; }
+    .message{
+      margin-top:18px;background:linear-gradient(180deg, #ffffff, #fbfbff);
+      border-radius:12px;padding:18px;border:1px solid rgba(99,102,241,0.06);
+    }
 
-.tab-content { display:none; padding:10px; background:none; margin:5px; }
-.tab-content.active { display:block; }
+    .message p{font-size:16px;color:#0b1220;margin-top:8px;}
 
-label {
-  display:block;
-  margin:5px 0 2px;
-  font-weight:bold;
-  font-size:12px;
-  text-align:center;
-}
+    .links{
+      display:flex;gap:12px;flex-wrap:wrap;
+      margin-top:16px;justify-content:center;
+    }
 
-input, textarea {
-  width:100%;
-  padding:4px;
-  border:1px solid #c2c1c2;
-  border-radius:4px;
-  margin-bottom:5px;
-  box-sizing:border-box;
-  font-size:12px;
-  text-align:center;
-}
+    .btn{
+      display:inline-block;padding:12px 18px;
+      border-radius:10px;text-decoration:none;font-weight:800;
+      box-shadow:0 6px 16px rgba(15,23,42,0.08);
+      border:1px solid rgba(0,0,0,0.06);
+      min-width:140px;
+    }
 
-textarea { min-height:40px; }
+    .btn-primary{background:linear-gradient(90deg,#0ea5a4,#06b6d4);color:white}
+    .btn-secondary{background:linear-gradient(90deg,#8b5cf6,#6366f1);color:white}
 
-button { 
-  background:#0c8380; 
-  color:white; 
-  border:none; 
-  padding:8px 10px; 
-  margin:5px 0; 
-  cursor:pointer; 
-  border-radius:6px; 
-  width:100%; 
-  font-size:14px; 
-  font-weight:bold; 
-}
+    .small-note{margin-top:14px;color:#475569;font-size:14px}
 
-footer { 
-  text-align:center; 
-  padding:10px; 
-  color:black; 
-  font-weight:bold; 
-  font-size:12px; 
-}
+    footer{margin-top:18px;text-align:center;color:#475569;font-weight:700}
 
-@media print {
-  body { background:none !important; }
-  .tab-content { background:transparent !important; }
-  input, textarea, label { background:transparent !important; color:black; border-color:#c2c1c2; }
-  body, input, textarea, label, button, header, footer, .tab-content {
-    font-family: 'HelveticaNeueW23', Arial, sans-serif;
-  }
-}
-</style>
+    @media (max-width:520px){
+      .logo{width:56px;height:56px;font-size:18px}
+      h1{font-size:18px}
+      .card{padding:18px}
+      .btn{width:100%;text-align:center}
+      .links{flex-direction:column}
+    }
+  </style>
 </head>
 <body>
+  <div class="card" role="main" aria-labelledby="title">
+    <header>
+      <div class="logo">عاجل</div>
+      <h1 id="title">رسالة هامة للمعلمين والمعلمات</h1>
+      <p class="lead">نشكركم على اهتمامكم — الرجاء قراءة الرسالة والضغط على الرابط المناسب.</p>
+    </header>
 
-<!-- نافذة التنويه -->
-<div class="overlay" id="popupOverlay">
-  <div class="popup">
-    <h2>💡 تنويه</h2>
-    <p>رسوم استخدام الرابط بعد تاريخ 15 أكتوبر 2025 <strong>10 ريال</strong>.<br>
-    تدفع الرسوم لمرة واحدة فقط و يمكنك الدخول مجانًا لتجربة البرنامج، لكن بدفعك تجعل استخدامك حلالًا وتدعم استمرار الخدمة وأذنت لمن يشهد والله خير الشاهدين.</p>
-    <img src="images/cash.png" alt="cash">
-    <button onclick="closePopup()">دخول</button>
+    <div class="message" aria-label="نص الرسالة">
+      <p style="font-weight:800;">عزيزي المعلم/عزيزتي المعلمة،</p>
+      <p>نرجو أن تكون تجربتكم للبرنامج مفيدة — وهذا هو الغرض الأساسي من تصميم هذا البرنامج.</p>
+      <p>وللحصول على البرنامج على شكل تطبيق مثبت على جهازك الرجاء الدخول على الرابط المناسب أدناه:</p>
+
+      <div class="links" role="navigation" aria-label="روابط التحميل">
+        <a class="btn btn-primary" href="https://defullah2010-svg.github.io/P1/" rel="noopener">رابط المعلمين</a>
+        <a class="btn btn-secondary" href="https://defullah2010-svg.github.io/P2/" rel="noopener">رابط المعلمات</a>
+      </div>
+
+      <p class="small-note">يوجد رسوم رمزية للاستخدام <strong>10ريال </strong> لكل برنامج موجودة في تبويب "رسوم الاستخدام" داخل التطبيق المرجو دفع الرسوم قبل الاستخدام.</p>
+      <strong>ملاحظة/ يمنع تداول الروابط الفرعية للبرامج وهذا يعد انتهاك لحقوق النسخ و الملكية الفكرية  © </strong>
+      
+      <!-- السطر المعدل: أضفنا العبارة قبل النص وجعلنا جزءاً منه باللون الأحمر -->
+      <p style="font-weight:800;margin-top:10px;">
+        
+        <span style="color:#dc2626;">  اجعل استخدامك حلالاً واذنت لمن يشهد، والله خير الشاهدين</span>
+      </p>
+    </div>
+
+    <footer>
+      <small>وتقبلوا تحياتي أخوكم / أ.ضيف الله الطويرقي</small>
+    </footer>
   </div>
-</div>
-
-<!-- محتوى صفحة النظام -->
-<div id="mainContent" style="display:none;">
-  <header>
-    <h1>نظام تقارير أداء المعلم</h1>
-  </header>
-
-  <div class="tabs">
-    <button class="tab-button active" onclick="openTab('daily')">نموذج التقرير اليومي</button>
-    <button class="tab-button" onclick="openTab('weekly')">نموذج التقرير الأسبوعي</button>
-    <button class="tab-button" onclick="openTab('monthly')">نموذج التقرير الشهري</button>
-  </div>
-
-  <!-- التقرير اليومي -->
-<div id="daily" class="tab-content active">
-<label><h2>التقرير اليومي</h2></label>
-
-<div style="display:flex; gap:10px; justify-content:center; margin-bottom:30px;">
-  <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label>إدارة تعليم منطقة</label>
-    <input type="text">
-  </div>
-  <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label>اسم المدرسة</label>
-    <input type="text">
-  </div>
-</div>
-
-<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:5px;">
-  <div><label>اسم المعلم</label><input type="text"></div>
-  <div><label>التخصص</label><input type="text"></div>
-  <div><label>الفصل الدراسي</label><input type="text"></div>
-  <div><label>الصف</label><input type="text"></div>
-  <div><label>الوحدة الدراسية</label><input type="text"></div>
-  <div><label>عنوان الدرس</label><input type="text"></div>
-  <div><label>التاريخ</label><input type="text" id="dailyDate" placeholder="DD-MM-YYYY"></div>
-  <div><label>الحصة</label><input type="text"></div>
-</div>
-
-<label>أهداف الدرس</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<label>نسبة تحقق أهداف الدرس</label><input type="text">
-
-<label>ملاحظات حول تفاعل الطلاب</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<label>التحديات الصفية</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<!-- حقل مدير المدرسة -->
-<div style="display:flex; justify-content:center; margin-bottom:10px;">
-  <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label>مدير المدرسة</label>
-    <input type="text">
-  </div>
-</div>
-
-
-<input type="file" multiple accept="image/*" onchange="storeImages(event,'daily')">
-<div id="daily-counter" style="font-size:12px; color:#15445a; font-weight:bold;">عدد الصور المرفوعة: 0 / 4</div>
-<div id="daily-preview" style="display:flex; gap:5px; flex-wrap:wrap; margin-top:5px;"></div>
-
-<button onclick="printPDF('daily')">طباعة التقرير اليومي</button>
-</div>
-
-<!-- التقرير الأسبوعي -->
-<div id="weekly" class="tab-content">
-<label><h2>التقرير الأسبوعي</h2></label>
-
-<div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px;">
-  <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label>إدارة تعليم منطقة</label>
-    <input type="text">
-  </div>
-  <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label>اسم المدرسة</label>
-    <input type="text">
-  </div>
-</div>
-
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <div><label>اسم المعلم</label><input type="text"></div>
-  <div><label>التخصص</label><input type="text"></div>
-  <div><label>الفصل الدراسي</label><input type="text"></div>
-</div>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <div><label>الصف</label><input type="text"></div>
-  <div><label>الأسبوع</label><input type="text"></div>
-  <div><label>التاريخ</label><input type="text" id="weeklyDate" placeholder="DD-MM-YYYY"></div>
-</div>
-
-<label>أهم الدروس المنفذة</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<label>أبرز نقاط القوة لدى الطلاب</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<label>أبرز نقاط الضعف لدى الطلاب</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<label>أبرز التحديات التعليمية</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<label>الإجراءات العلاجية</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<label>أثر الإجراءات على تقدم الطلاب</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<label>توصيات الأسبوع القادم</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<!-- حقل مدير المدرسة -->
-<div style="display:flex; justify-content:center; margin-bottom:10px;">
-  <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label>مدير المدرسة</label>
-    <input type="text">
-  </div>
-</div>
-
-<input type="file" multiple accept="image/*" onchange="storeImages(event,'weekly')">
-<div id="weekly-counter" style="font-size:12px; color:#15445a; font-weight:bold;">عدد الصور المرفوعة: 0 / 4</div>
-<div id="weekly-preview" style="display:flex; gap:5px; flex-wrap:wrap; margin-top:5px;"></div>
-
-<button onclick="printPDF('weekly')">طباعة التقرير الأسبوعي</button>
-</div>
-
-<!-- التقرير الشهري -->
-<div id="monthly" class="tab-content">
-<label><h2>التقرير الشهري</h2></label>
-
-<div style="display:flex; gap:10px; justify-content:center; margin-bottom:1px;">
-  <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label>إدارة تعليم منطقة</label>
-    <input type="text">
-  </div>
-  <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label>اسم المدرسة</label>
-    <input type="text">
-  </div>
-</div>
-<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:5px;">
-  <div><label>اسم المعلم</label><input type="text"></div>
-  <div><label>التخصص</label><input type="text"></div>
-  <div><label>الفصل الدراسي</label><input type="text"></div>
-  <div><label>الصف</label><input type="text"></div>
-</div>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <div><label>الشهر</label><input type="text"></div>
-  <div><label>التاريخ</label><input type="text" id="monthlyDate" placeholder="DD-MM-YYYY"></div>
-  <div><label>نسبة إنجاز الخطة</label><input type="text"></div>
-</div>
-
-<label>أبرز التحسينات في أداء الطلاب</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<label>القضايا المستمرة التي تحتاج متابعة</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<label>خطط المعالجة المقترحة</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<label>الطلاب المتميزون</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<label>الخطة الإثرائية للطلاب المتميزين</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<label>الطلاب المخفقون</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<label>الخطة العلاجية للطلاب المخفقين</label>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:5px;">
-  <input type="text"><input type="text"><input type="text">
-</div>
-
-<!-- حقل مدير المدرسة -->
-<div style="display:flex; justify-content:center; margin-bottom:10px;">
-  <div style="display:flex; flex-direction:column; align-items:center; width:200px;">
-    <label>مدير المدرسة</label>
-    <input type="text">
-  </div>
-</div>
-
-<input type="file" multiple accept="image/*" onchange="storeImages(event,'monthly')">
-<div id="monthly-counter" style="font-size:12px; color:#15445a; font-weight:bold;">عدد الصور المرفوعة: 0 / 4</div>
-<div id="monthly-preview" style="display:flex; gap:5px; flex-wrap:wrap; margin-top:5px;"></div>
-
-<button onclick="printPDF('monthly')">طباعة التقرير الشهري</button>
-</div>
-
-
-  
-  <footer>تصميم : أ.ضيف الله الطويرقي   0543559220 </footer>
-</div>
-
-<script>
-function closePopup() {
-  document.getElementById("popupOverlay").style.display = "none";
-  document.getElementById("mainContent").style.display = "block";
-}
-
-let uploadedImages = {};
-
-function openTab(tabId){
-  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.tab-button').forEach(el=>el.classList.remove('active'));
-  document.getElementById(tabId).classList.add('active');
-  event.target.classList.add('active');
-}
-
-function storeImages(event, tabId){
-  const files = event.target.files;
-  if(!uploadedImages[tabId]) uploadedImages[tabId] = [];
-  if(uploadedImages[tabId].length + files.length > 4){
-    alert("مسموح برفع 4 صور فقط لكل تقرير.");
-    event.target.value = "";
-    return;
-  }
-  for(let i=0;i<files.length;i++){
-    const reader = new FileReader();
-    reader.onload = function(e){ 
-      uploadedImages[tabId].push(e.target.result); 
-      updateCounter(tabId); 
-      renderPreview(tabId);
-    }
-    reader.readAsDataURL(files[i]);
-  }
-}
-
-function updateCounter(tabId){
-  const counter = document.getElementById(tabId+"-counter");
-  if(counter){
-    const count = uploadedImages[tabId].length;
-    counter.textContent = "عدد الصور المرفوعة: " + count + " / 4";
-    counter.style.color = (count >= 4) ? "red" : "#15445a";
-  }
-}
-
-function renderPreview(tabId){
-  const preview = document.getElementById(tabId+"-preview");
-  preview.innerHTML = "";
-  uploadedImages[tabId].forEach((src, index)=>{
-    const container = document.createElement("div");
-    container.style.position = "relative";
-    const img = document.createElement("img");
-    img.src = src;
-    img.style.width = "70px";
-    img.style.height = "70px";
-    img.style.objectFit = "cover";
-    img.style.border = "1px solid #ccc";
-    img.style.borderRadius = "4px";
-    const btn = document.createElement("button");
-    btn.textContent = "❌";
-    btn.style.position = "absolute";
-    btn.style.top = "-5px";
-    btn.style.right = "-5px";
-    btn.style.background="red";
-    btn.style.color="white";
-    btn.style.border="none";
-    btn.style.borderRadius="50%";
-    btn.style.cursor="pointer";
-    btn.style.fontSize="10px";
-    btn.onclick = ()=>{
-      uploadedImages[tabId].splice(index,1);
-      updateCounter(tabId);
-      renderPreview(tabId);
-    };
-    container.appendChild(img);
-    container.appendChild(btn);
-    preview.appendChild(container);
-  });
-}
-
-flatpickr("#dailyDate",{ locale:'ar', dateFormat:"d-m-Y", altInput:true, altFormat:"d-m-Y" });
-flatpickr("#weeklyDate",{ locale:'ar', dateFormat:"d-m-Y", altInput:true, altFormat:"d-m-Y" });
-flatpickr("#monthlyDate",{ locale:'ar', dateFormat:"d-m-Y", altInput:true, altFormat:"d-m-Y" });
-
-function printPDF(tabId){
-  const content = document.getElementById(tabId).cloneNode(true);
-  content.querySelectorAll('button,input[type="file"],#'+tabId+'-counter,#'+tabId+'-preview').forEach(el=>el.remove());
-  content.querySelectorAll('input[type="text"]').forEach(input=>{ if(input.placeholder==="DD-MM-YYYY") input.placeholder = ''; });
-
-  const wrapper = document.createElement('div');
-  wrapper.style.position='relative';
-  wrapper.style.width='210mm';
-  wrapper.style.height='296.5mm';
-  wrapper.style.padding='13mm 10mm 20mm 10mm';
-  wrapper.style.boxSizing='border-box';
-  wrapper.style.overflow='hidden';
-  wrapper.style.backgroundImage = 'url("images/background.png")';
-  wrapper.style.backgroundSize = 'cover';
-  wrapper.style.backgroundRepeat = 'no-repeat';
-  wrapper.style.backgroundPosition = 'center';
-  wrapper.appendChild(content);
-
-  const tabImages = uploadedImages[tabId] || [];
-  if(tabImages.length>0){
-    const imagesWrapper = document.createElement('div');
-    imagesWrapper.style.display='flex';
-    imagesWrapper.style.justifyContent='center';
-    imagesWrapper.style.marginTop='5px';
-    imagesWrapper.style.gap='5px';
-    tabImages.forEach(src=>{
-      const img = document.createElement('img');
-      img.src = src;
-      img.style.width='160px';  
-      img.style.height='160px';
-      img.style.objectFit='cover';
-      imagesWrapper.appendChild(img);
-    });
-    wrapper.appendChild(imagesWrapper);
-  }
-
-  html2pdf().set({
-    margin:0,
-    filename: tabId+'-report.pdf',
-    image:{type:'jpeg',quality:0.95},
-    html2canvas:{scale:3, useCORS:true, backgroundColor:null, scrollY:0},
-    jsPDF:{unit:'mm', format:'a4', orientation:'portrait'}
-  }).from(wrapper).save();
-}
-</script>
 </body>
 </html>
